@@ -1,0 +1,30 @@
+#contours take only binary color image. assuming the image is processed we go-
+
+contours, _ = cv2.findContours(no_noise, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+contours = sorted(contours, key=lambda c: cv2.boundingRect(c)[1])
+output_dir = "cropped_lines"
+os.makedirs(output_dir, exist_ok=True)
+h_img, w_img = no_noise.shape[:2]
+for i, c in enumerate(contours):
+    x, y, w, h = cv2.boundingRect(c)
+    line_img = no_noise[y:y+h, x:x+w]
+    y < h or (y<90 and x<90):
+      os.remove(line_img)
+    filename = os.path.join(output_dir, f"line_{i}.png")
+    cv2.imwrite(filename, line_img)
+print("done")
+
+
+
+#now lots of small and unnecessary images might be generated. delete those-
+
+import os
+for filename in os.listdir(output_dir):
+    filepath = os.path.join(output_dir, filename)
+    if filename.lower().endswith((".jpg", ".png", ".jpeg")):
+        img = cv2.imread(filepath)
+        ht, wt = img.shape[:2] 
+        if  ht < h or (ht < 90 and wt < 90):
+            os.remove(filepath)
+print("Done")
+    
