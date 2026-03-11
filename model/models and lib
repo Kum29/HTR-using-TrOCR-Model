@@ -1,0 +1,23 @@
+import cv2
+import numpy as np
+import torch
+from PIL import Image
+from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+import torch.nn.functional as F
+import os
+import time  # <-- import time
+
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+processor_large = TrOCRProcessor.from_pretrained("microsoft/trocr-large-handwritten", local_files_only=True)
+model_large = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-large-handwritten", local_files_only=True).to(device)
+model_large = torch.compile(model_large, mode="reduce-overhead")  # Compile the model for faster inference
+processor_base = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten", local_files_only=True)
+model_base = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten", local_files_only=True,).to(device)
+model_base = torch.compile(model_base, mode="reduce-overhead")  # Compile the model for faster inference
+
+if device == "cuda":
+    model_base = model_base.half() #floating from 32 to 16 bit
+    model_large = model_large.half()
