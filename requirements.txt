@@ -1,0 +1,5 @@
+pip install cv2
+pip install numpy
+pip install torch
+pip install PIL
+pip install transformers
